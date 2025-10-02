@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adelia Azizatul Haq - Data Analyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #ffffff;
+            color: #0f172a;
+        }
+        
+        @keyframes drawLine {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes dataFlow {
+            0% { transform: translateX(-100%) translateY(0); }
+            100% { transform: translateX(100%) translateY(0); }
+        }
+        
+        .chart-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2s ease-out forwards;
+        }
+        
+        .data-point {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .float-element {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .page {
+            display: none;
+            opacity: 0;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+        
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+            border-color: #6366f1;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.2s;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .mobile-menu {
+            display: none;
+        }
+        
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .data-viz-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            opacity: 0.03;
+        }
+        
+        .grid-pattern {
+            background-image: 
+                linear-gradient(#6366f1 1px, transparent 1px),
+                linear-gradient(90deg, #6366f1 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.05;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .metric-number {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Data Visualization Background -->
+    <div class="data-viz-bg grid-pattern"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-lg z-50 border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center  justify-between">
+                <div class="logo w-24">
+                    <img src="logo.png" class="h-full w-full object-contain">
+                </div>
+                
+                <div class="hidden md:flex gap-8 text-sm font-medium ">
+                    <a onclick="showPage('home')" class="nav-link text-gray-700 hover:text-gray-900 cursor-pointer">Home</a>
+                    <a onclick="showPage('about')" class="nav-link text-gray-700 hover:text-gray-900 cursor-pointer">About</a>
+                    <a onclick="showPage('projects')" class="nav-link text-gray-700 hover:text-gray-900 cursor-pointer">Projects</a>
+                    <a onclick="showPage('education')" class="nav-link text-gray-700 hover:text-gray-900 cursor-pointer">Education</a>
+                    <a onclick="showPage('contact')" class="nav-link text-gray-700 hover:text-gray-900 cursor-pointer">Contact</a>
+                </div>
+
+                <button class="md:hidden text-gray-700" onclick="toggleMenu()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="mobileMenu" class="mobile-menu md:hidden mt-4 pb-4">
+                <a onclick="showPage('home'); toggleMenu()" class="block py-2 text-gray-700 cursor-pointer">Home</a>
+                <a onclick="showPage('about'); toggleMenu()" class="block py-2 text-gray-700 cursor-pointer">About</a>
+                <a onclick="showPage('projects'); toggleMenu()" class="block py-2 text-gray-700 cursor-pointer">Projects</a>
+                <a onclick="showPage('education'); toggleMenu()" class="block py-2 text-gray-700 cursor-pointer">Education</a>
+                <a onclick="showPage('contact'); toggleMenu()" class="block py-2 text-gray-700 cursor-pointer">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME -->
+    <div id="homePage" class="page active">
+        <section class="min-h-screen flex items-center justify-center px-6 pt-20 relative">
+            <!-- Animated Data Visualization -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <svg class="absolute top-20 right-10 w-64 h-64 opacity-10" viewBox="0 0 200 200">
+                    <polyline points="20,150 50,120 80,140 110,80 140,100 170,60" 
+                              fill="none" stroke="#6366f1" stroke-width="3" class="chart-line"/>
+                    <circle cx="20" cy="150" r="4" fill="#6366f1" class="data-point"/>
+                    <circle cx="50" cy="120" r="4" fill="#8b5cf6" class="data-point" style="animation-delay: 0.2s"/>
+                    <circle cx="80" cy="140" r="4" fill="#a855f7" class="data-point" style="animation-delay: 0.4s"/>
+                    <circle cx="110" cy="80" r="4" fill="#c026d3" class="data-point" style="animation-delay: 0.6s"/>
+                    <circle cx="140" cy="100" r="4" fill="#d946ef" class="data-point" style="animation-delay: 0.8s"/>
+                    <circle cx="170" cy="60" r="4" fill="#ec4899" class="data-point" style="animation-delay: 1s"/>
+                </svg>
+                
+                <svg class="absolute bottom-20 left-10 w-80 h-80 opacity-10" viewBox="0 0 200 200">
+                    <rect x="20" y="120" width="25" height="60" fill="#6366f1" class="float-element"/>
+                    <rect x="55" y="90" width="25" height="90" fill="#8b5cf6" class="float-element" style="animation-delay: 0.3s"/>
+                    <rect x="90" y="70" width="25" height="110" fill="#a855f7" class="float-element" style="animation-delay: 0.6s"/>
+                    <rect x="125" y="100" width="25" height="80" fill="#c026d3" class="float-element" style="animation-delay: 0.9s"/>
+                    <rect x="160" y="80" width="25" height="100" fill="#ec4899" class="float-element" style="animation-delay: 1.2s"/>
+                </svg>
+            </div>
+            
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+
+            <!-- Foto Profil -->
+            <div class="flex justify-center mb-6">
+                <img src="p1.jpeg" alt="Adelia Azizatul Haq" 
+                class="w-32 h-32 sm:w-44 sm:h-44 md:w-60 md:h-60 rounded-full object-cover border-4 border-white shadow-lg">
+            </div>
+
+            <!-- Nama -->
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight">
+                Adelia Azizatul Haq
+            </h1>
+
+            <!-- Deskripsi -->
+            <p class="text-base sm:text-base md:text-2xl text-gray-600 mb-8 sm:mb-12 max-w-md sm:max-w-2xl mx-auto px-2">
+                Empowering decisions through data-driven insights
+            </p>
+
+            <!-- Tombol -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12 sm:mb-20">
+                <button onclick="showPage('contact')" 
+                class="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all">
+                Get in Touch
+                </button>
+                <button onclick="showPage('projects')" 
+                class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-900 text-gray-900 rounded-xl font-semibold hover:bg-gray-900 hover:text-white transition-all">
+                View Work
+                </button>
+            </div>
+
+            <!-- Tools Data Analyst -->
+            <div class="max-w-5xl mx-auto mt-12">
+                <!-- Kotak besar -->
+                <div class="bg-white shadow-lg rounded-2xl p-8 border">
+
+                    <h2 class="text-xl font-bold mb-6 text-center">Data Analyst Tools</h2>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+
+                    <!-- Python -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://www.vectorlogo.zone/logos/python/python-icon.svg" alt="Python" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">Python</div>
+                    </div>
+
+                    <!-- SQL -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://www.svgrepo.com/show/303229/microsoft-sql-server-logo.svg" alt="SQL" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">SQL Server</div>
+                    </div>
+
+                    <!-- Excel -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/excel/excel-original.svg" alt="Excel" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">Excel</div>
+                    </div>
+
+                    <!-- Power BI -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">Power BI</div>
+                    </div>
+
+                    <!-- Tableau -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tableau/tableau-original.svg" alt="Tableau" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">Tableau</div>
+                    </div>
+
+                    <!-- R Language -->
+                    <div class="card rounded-2xl p-6 flex flex-col items-center shadow hover:shadow-xl transition">
+                        <img src="https://www.vectorlogo.zone/logos/r-project/r-project-icon.svg" alt="R" class="w-12 h-12 mb-4">
+                        <div class="text-sm sm:text-base font-semibold">R Language</div>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="aboutPage" class="page">
+        <section class="min-h-screen px-6 pt-32 pb-20 relative">
+            <div class="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full blur-3xl opacity-30"></div>
+            
+            <div class="max-w-5xl mx-auto relative z-10">
+                <h1 class="text-6xl md:text-7xl font-extrabold mb-16">About</h1>
+                
+                <div class="grid md:grid-cols-2 gap-16 mb-20">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-gray-900">Background</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-lg">
+                            Lulusan Statistika dengan 4+ tahun pengalaman dalam data analytics. Spesialisasi dalam mengubah raw data menjadi strategic insights yang mendorong pertumbuhan bisnis.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed text-lg">
+                            Berpengalaman bekerja dengan berbagai industri, dari startup hingga enterprise, membantu organisasi membuat keputusan berbasis data yang impactful.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-gray-900">Expertise</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-900 font-semibold">Python & SQL</span>
+                                    <span class="text-gray-500 font-mono text-sm">90%</span>
+                                </div>
+                                <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="progress-bar h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-900 font-semibold">Power BI & Tableau</span>
+                                    <span class="text-gray-500 font-mono text-sm">88%</span>
+                                </div>
+                                <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="progress-bar h-full bg-gradient-to-r from-purple-500 to-pink-600 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-900 font-semibold">Statistics & ML</span>
+                                    <span class="text-gray-500 font-mono text-sm">85%</span>
+                                </div>
+                                <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="progress-bar h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-900 font-semibold">Data Storytelling</span>
+                                    <span class="text-gray-500 font-mono text-sm">92%</span>
+                                </div>
+                                <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="progress-bar h-full bg-gradient-to-r from-purple-500 to-pink-600 rounded-full" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-20">
+                    <h2 class="text-4xl font-bold mb-12">Experience</h2>
+                    <div class="space-y-8">
+                        <div class="card rounded-2xl p-8 border-l-4 border-indigo-500">
+                            <div class="flex justify-between items-start mb-4 flex-wrap gap-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-900">Senior Data Analyst</h3>
+                                    <p class="text-indigo-600 font-semibold text-lg">Tech Solutions Inc.</p>
+                                </div>
+                                <span class="text-gray-500 font-medium">2022 - Present</span>
+                            </div>
+                            <ul class="text-gray-600 space-y-2">
+                                <li>• Led analytics team in developing executive dashboards</li>
+                                <li>• Implemented predictive models generating $2M additional revenue</li>
+                                <li>• Improved decision-making speed by 40%</li>
+                            </ul>
+                        </div>
+
+                        <div class="card rounded-2xl p-8 border-l-4 border-purple-500">
+                            <div class="flex justify-between items-start mb-4 flex-wrap gap-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-900">Data Analyst</h3>
+                                    <p class="text-purple-600 font-semibold text-lg">Digital Marketing Agency</p>
+                                </div>
+                                <span class="text-gray-500 font-medium">2020 - 2022</span>
+                            </div>
+                            <ul class="text-gray-600 space-y-2">
+                                <li>• Analyzed 500K+ user behavior patterns</li>
+                                <li>• Built automated reporting system (20 hours saved weekly)</li>
+                                <li>• Increased client ROI by 35%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- PROJECTS -->
+    <div id="projectsPage" class="page">
+        <section class="min-h-screen px-6 pt-32 pb-20 relative">
+            <div class="absolute bottom-40 left-20 w-96 h-96 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full blur-3xl opacity-30"></div>
+            
+            <div class="max-w-5xl mx-auto relative z-10">
+                <h1 class="text-6xl md:text-7xl font-extrabold mb-6">Projects</h1>
+                <p class="text-xl text-gray-600 mb-16 max-w-2xl">
+                    Selected works that delivered measurable business impact
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card rounded-2xl overflow-hidden">
+                        <div class="h-56 bg-gradient-to-br from-indigo-50 to-purple-50 border-b border-gray-200 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-full h-full absolute opacity-20" viewBox="0 0 200 100">
+                                <circle cx="40" cy="50" r="15" fill="#6366f1"/>
+                                <circle cx="100" cy="50" r="25" fill="#8b5cf6"/>
+                                <circle cx="160" cy="50" r="20" fill="#a855f7"/>
+                            </svg>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Customer Segmentation</h3>
+                            <p class="text-gray-600 mb-6 leading-relaxed">
+                                K-Means clustering analysis to identify 5 customer segments, enabling personalized marketing campaigns.
+                            </p>
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-semibold">Python</span>
+                                <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-semibold">ML</span>
+                            </div>
+                            <div class="text-emerald-600 font-semibold">↑ 35% engagement rate</div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl overflow-hidden">
+                        <div class="h-56 bg-gradient-to-br from-purple-50 to-pink-50 border-b border-gray-200 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-full h-full absolute opacity-20" viewBox="0 0 200 100">
+                                <rect x="30" y="60" width="25" height="40" fill="#8b5cf6"/>
+                                <rect x="70" y="40" width="25" height="60" fill="#a855f7"/>
+                                <rect x="110" y="30" width="25" height="70" fill="#c026d3"/>
+                                <rect x="150" y="50" width="25" height="50" fill="#d946ef"/>
+                            </svg>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Sales Forecasting Dashboard</h3>
+                            <p class="text-gray-600 mb-6 leading-relaxed">
+                                Interactive dashboard with ARIMA & Prophet models for accurate sales predictions.
+                            </p>
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-semibold">Power BI</span>
+                                <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg text-sm font-semibold">SQL</span>
+                            </div>
+                            <div class="text-emerald-600 font-semibold">95% accuracy</div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl overflow-hidden">
+                        <div class="h-56 bg-gradient-to-br from-blue-50 to-indigo-50 border-b border-gray-200 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-full h-full absolute opacity-20" viewBox="0 0 200 100">
+                                <polyline points="20,80 50,60 80,70 110,40 140,50 170,30" 
+                                          fill="none" stroke="#6366f1" stroke-width="4" class="chart-line"/>
+                            </svg>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">E-commerce Behavior Analysis</h3>
+                            <p class="text-gray-600 mb-6 leading-relaxed">
+                                Deep analysis of user behavior to optimize conversion funnel and identify opportunities.
+                            </p>
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold">Python</span>
+                                <span class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-semibold">Analytics</span>
+                            </div>
+                            <div class="text-emerald-600 font-semibold">↑ 28% conversion rate</div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl overflow-hidden">
+                        <div class="h-56 bg-gradient-to-br from-pink-50 to-red-50 border-b border-gray-200 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-full h-full absolute opacity-20" viewBox="0 0 200 100">
+                                <path d="M20,80 Q60,20 100,50 T180,40" fill="none" stroke="#ec4899" stroke-width="4" class="chart-line"/>
+                            </svg>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Churn Prediction Model</h3>
+                            <p class="text-gray-600 mb-6 leading-relaxed">
+                                Machine learning model to predict customer churn and enable proactive retention.
+                            </p>
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg text-sm font-semibold">XGBoost</span>
+                                <span class="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold">ML</span>
+                            </div>
+                            <div class="text-emerald-600 font-semibold">89% accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- EDUCATION -->
+    <div id="educationPage" class="page">
+        <section class="min-h-screen px-6 pt-32 pb-20">
+            <div class="max-w-5xl mx-auto">
+                <h1 class="text-6xl md:text-7xl font-extrabold mb-6">Education</h1>
+                <p class="text-xl text-gray-600 mb-16 max-w-2xl">
+                    Academic background and professional certifications
+                </p>
+                
+                <div class="mb-16">
+                    <h2 class="text-4xl font-bold mb-10 text-gray-900">Academic</h2>
+                    <div class="card rounded-2xl p-10 border-l-4 border-indigo-500">
+                        <div class="flex items-start gap-6">
+                            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-3 flex-wrap gap-4">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-gray-900">Bachelor of Statistics</h3>
+                                        <p class="text-indigo-600 font-semibold text-lg">Universitas Airlangga</p>
+                                    </div>
+                                    <span class="text-gray-500 font-medium">2016 - 2020</span>
+                                </div>
+                                <p class="text-gray-600 font-semibold">GPA: 3.78/4.00</p>
+                                <p class="text-gray-600 mt-2">Focus: Statistical Modeling, Data Mining, Multivariate Analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-4xl font-bold mb-10 text-gray-900">Certifications</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center text-2xl">
+                                    📊
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Google Data Analytics Professional</h3>
+                                    <p class="text-sm text-gray-500">Google • 2023</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">
+                                    🐍
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Python for Data Science</h3>
+                                    <p class="text-sm text-gray-500">IBM • 2022</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                                    📈
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Microsoft Power BI Data Analyst</h3>
+                                    <p class="text-sm text-gray-500">Microsoft • 2023</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center text-2xl">
+                                    🤖
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Machine Learning Specialization</h3>
+                                    <p class="text-sm text-gray-500">Coursera • 2022</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center text-2xl">
+                                    🗄️
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">SQL for Data Analysis</h3>
+                                    <p class="text-sm text-gray-500">Udacity • 2021</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">
+                                    📉
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Tableau Desktop Specialist</h3>
+                                    <p class="text-sm text-gray-500">Tableau • 2023</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                                    📊
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Statistics & Probability</h3>
+                                    <p class="text-sm text-gray-500">Khan Academy • 2021</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center text-2xl">
+                                    💼
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Business Analytics</h3>
+                                    <p class="text-sm text-gray-500">LinkedIn Learning • 2022</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="contactPage" class="page">
+        <section class="min-h-screen px-6 pt-32 pb-20 relative">
+            <div class="absolute top-40 left-20 w-96 h-96 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full blur-3xl opacity-40"></div>
+            
+            <div class="max-w-5xl mx-auto relative z-10">
+                <h1 class="text-6xl md:text-7xl font-extrabold mb-6">Contact</h1>
+                <p class="text-xl text-gray-600 mb-16 max-w-2xl">
+                    Let's discuss how data can drive your business forward
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="card rounded-2xl p-10">
+                        <h2 class="text-3xl font-bold mb-8 text-gray-900">Send Message</h2>
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
+                                <input type="text" placeholder="Your name" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                <input type="email" placeholder="your@email.com" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                                <textarea rows="5" placeholder="Tell me about your project..." class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 resize-none focus:bg-white transition-all"></textarea>
+                            </div>
+                            <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="card rounded-2xl p-8">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 mb-1">Email</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Drop me an email</p>
+                                    <a href="mailto:adelia.azizatul@email.com" class="text-indigo-600 font-semibold hover:text-indigo-700">adelia.azizatul@email.com</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl p-8">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-7 h-7 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 mb-1">LinkedIn</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Connect professionally</p>
+                                    <a href="#" class="text-purple-600 font-semibold hover:text-purple-700">linkedin.com/in/adelia-haq</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl p-8">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-7 h-7 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 mb-1">GitHub</h3>
+                                    <p class="text-sm text-gray-600 mb-2">View my code</p>
+                                    <a href="#" class="text-pink-600 font-semibold hover:text-pink-700">github.com/adelia-haq</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl p-8">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-3 h-3 bg-emerald-500 rounded-full data-point"></div>
+                                <span class="text-emerald-700 font-bold">Available for Projects</span>
+                            </div>
+                            <p class="text-gray-600">
+                                Currently accepting freelance and consulting opportunities
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 py-12 px-6 mt-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="text-xl font-bold gradient-text mb-4">Adelia A. Haq</div>
+                    <p class="text-gray-600 text-sm">
+                        Data Analyst specializing in transforming data into insights
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-gray-900">Navigation</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li><a onclick="showPage('home')" class="hover:text-gray-900 cursor-pointer">Home</a></li>
+                        <li><a onclick="showPage('about')" class="hover:text-gray-900 cursor-pointer">About</a></li>
+                        <li><a onclick="showPage('projects')" class="hover:text-gray-900 cursor-pointer">Projects</a></li>
+                        <li><a onclick="showPage('education')" class="hover:text-gray-900 cursor-pointer">Education</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-gray-900">Services</h3>
+                    <ul class="space-y-2 text-gray-600 text-sm">
+                        <li>Data Analysis</li>
+                        <li>Dashboard Development</li>
+                        <li>Predictive Modeling</li>
+                        <li>Consulting</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-gray-900">Connect</h3>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:border-indigo-500 transition-all">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:border-indigo-500 transition-all">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-8 text-center">
+                <p class="text-gray-600 text-sm">© 2024 Adelia Azizatul Haq. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page + 'Page').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Thank you for your message! I will get back to you soon.');
+                    form.reset();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
